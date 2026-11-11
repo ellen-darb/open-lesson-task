@@ -1,4 +1,6 @@
+#include <algorithm>
 #include <fstream>
+#include <string>
 #include <vector>
 #include <stdexcept>
 #ifdef __cpp_lib_print
@@ -24,7 +26,22 @@ struct Classroom {
 
 // Отсортировать людей в классе по именам
 std::string sorted_classroom_list(Classroom &classroom) {
-  return std::string{};
+  std::vector<std::string> names;
+  names.reserve(classroom.teachers.size() + classroom.students.size());
+  for (const auto &t : classroom.teachers)
+    names.push_back(t.name + " " + t.lastname);
+  for (const auto &s : classroom.students)
+    names.push_back(s.name + " " + s.lastname);
+
+  // UTF-8 байты кириллицы упорядочены так же, как буквы в алфавите
+  std::sort(names.begin(), names.end());
+
+  std::string result;
+  for (size_t i = 0; i < names.size(); ++i) {
+    if (i) result += '\n';
+    result += names[i];
+  }
+  return result;
 }
 
 Classroom parse_classroom_from_file(const std::string &path);
